@@ -1,21 +1,244 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agenda</title>
-  <style>
-    body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-    li { margin: .5rem 0; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agenda</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap">
+<style>
+:root{--bg:#eef2f5;--panel:#fff;--tx:#14202b;--mut:#5d6b78;--bd:#d3dce4;--ac:#1b4f72;--onac:#fff;--hoy:#ffe27a;--sel:#d9e8f3;--tr:#2f6f5e;--es:#3b6fb6;--pe:#c0702b;--ot:#8a6fb0}
+@media (prefers-color-scheme:dark){:root{--bg:#0f161d;--panel:#17212b;--tx:#e6edf3;--mut:#93a3b1;--bd:#2b3946;--ac:#7fb8e0;--onac:#0f161d;--hoy:#7a6514;--sel:#223545;--tr:#5fb89f;--es:#7aa7e6;--pe:#e39a5c;--ot:#b79ce0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.45}
+.wrap{max-width:1000px;margin:0 auto;padding:1.25rem}
+header{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:space-between;align-items:center;margin-bottom:1rem}
+h1{font-size:2rem;font-weight:800;margin:0;letter-spacing:-.02em}
+h2,h3{margin:0;font-weight:600}
+button,.btn,input,select,textarea{font:inherit;color:inherit}
+button,.btn{background:var(--panel);border:1px solid var(--bd);border-radius:6px;padding:.4rem .8rem;cursor:pointer;display:inline-block}
+button:hover,.btn:hover{border-color:var(--ac)}
+button:focus-visible,.btn:focus-within,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.primary{background:var(--ac);color:var(--onac);border-color:var(--ac);font-weight:600}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:1rem;align-items:start}
+@media (max-width:760px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:1rem}
+.col{display:grid;gap:1rem}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+#mes{text-transform:capitalize;font-size:1.25rem}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.grid b{font-weight:600;color:var(--mut);font-size:.85rem;padding-bottom:.25rem}
+.d{aspect-ratio:1;padding:2px;border-radius:8px;border:1px solid transparent;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.d.hoy{background:var(--hoy);font-weight:800}
+.d.sel{border-color:var(--ac);background:var(--sel)}
+.d.hoy.sel{background:var(--hoy)}
+.d em{display:flex;gap:2px;height:6px}
+.d i{width:6px;height:6px;border-radius:50%}
+.tabs{display:flex;gap:.5rem;margin-bottom:.75rem}
+.tabs .on{background:var(--ac);color:var(--onac);border-color:var(--ac)}
+.filt{display:flex;gap:.5rem;margin-bottom:.75rem}
+input,select,textarea{background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:.4rem .6rem;width:100%}
+.filt input{flex:2}.filt select{flex:1}
+#tit{text-transform:capitalize;margin-bottom:.5rem}
+ul{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+li.ev{display:flex;gap:.6rem;align-items:flex-start;border-left:4px solid var(--c);background:var(--bg);border-radius:0 8px 8px 0;padding:.5rem .6rem}
+li.ev input{width:auto;margin-top:.3rem}
+li.ev>div{flex:1;min-width:0}
+li.ev small{display:block;color:var(--mut)}
+li.ev p{margin:.25rem 0 0;overflow-wrap:anywhere}
+li.ok strong{text-decoration:line-through;color:var(--mut)}
+li.ev span button{padding:.1rem .45rem}
+.vacio{color:var(--mut);padding:.5rem 0}
+form{display:grid;gap:.6rem}
+form label{display:grid;gap:.2rem;font-size:.9rem;color:var(--mut)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.btns{display:flex;gap:.5rem}
+#ft{color:var(--mut);font-size:.85rem;margin-top:1rem}
+</style>
 </head>
 <body>
-  <h1>Agenda del equipo</h1>
-  <h2>Noviembre 2026</h2>
-  <ul>
-    <li><b>Lunes 9</b> · 10:00 Reunión de equipo</li>
-    <li><b>Martes 10</b> · Llamada con cliente</li>
-    <li><b>Viernes 13</b> · Entrega de informe</li>
-  </ul>
+<div class="wrap">
+  <header>
+    <h1>Agenda</h1>
+    <div>
+      <button id="hoy">Ir a hoy</button>
+      <button id="exp">Exportar</button>
+      <label class="btn">Importar<input type="file" id="imp" accept=".json" hidden></label>
+    </div>
+  </header>
+  <main>
+    <div class="col">
+      <section class="panel">
+        <div class="nav">
+          <button id="prev" aria-label="Mes anterior">‹</button>
+          <h2 id="mes"></h2>
+          <button id="next" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="grid" id="grid"></div>
+      </section>
+      <section class="panel">
+        <h3 id="ftit" style="margin-bottom:.6rem">Nuevo evento</h3>
+        <form id="f">
+          <label>Título<input id="t" required maxlength="80"></label>
+          <div class="row">
+            <label>Fecha<input id="fe" type="date" required></label>
+            <label>Hora<input id="h" type="time"></label>
+          </div>
+          <label>Categoría
+            <select id="c">
+              <option value="trabajo">Trabajo</option>
+              <option value="estudio">Estudio</option>
+              <option value="personal">Personal</option>
+              <option value="otro">Otro</option>
+            </select>
+          </label>
+          <label>Notas<textarea id="n" rows="2" maxlength="300"></textarea></label>
+          <div class="btns">
+            <button class="primary" id="ok">Guardar evento</button>
+            <button type="button" id="cancel" hidden>Cancelar edición</button>
+          </div>
+        </form>
+      </section>
+    </div>
+    <section class="panel">
+      <div class="tabs">
+        <button data-v="dia" class="on">Día</button>
+        <button data-v="prox">Próximos</button>
+      </div>
+      <div class="filt">
+        <input id="q" type="search" placeholder="Buscar eventos" aria-label="Buscar">
+        <select id="fc" aria-label="Filtrar por categoría">
+          <option value="">Todas</option>
+          <option value="trabajo">Trabajo</option>
+          <option value="estudio">Estudio</option>
+          <option value="personal">Personal</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <h3 id="tit"></h3>
+      <ul id="lista"></ul>
+      <p id="ft"></p>
+    </section>
+  </main>
+</div>
+<script>
+const $ = s => document.querySelector(s);
+const KEY = 'agenda-eventos-v1';
+const COL = {trabajo:'var(--tr)', estudio:'var(--es)', personal:'var(--pe)', otro:'var(--ot)'};
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const pad = n => String(n).padStart(2, '0');
+const iso = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const fmt = f => new Date(f + 'T00:00').toLocaleDateString('es', {weekday:'long', day:'numeric', month:'long'});
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+let local = [], shared = [], view = new Date(), sel = iso(new Date()), modo = 'dia', editId = null;
+try { local = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(local)); } catch (e) {} };
+const all = () => [...shared.map(e => ({...e, repo:true})), ...local]
+  .sort((a, b) => (a.fecha + (a.hora || '99:99')).localeCompare(b.fecha + (b.hora || '99:99')));
+
+function calendario() {
+  const y = view.getFullYear(), m = view.getMonth(), hoy = iso(new Date());
+  $('#mes').textContent = MESES[m] + ' ' + y;
+  const vacios = (new Date(y, m, 1).getDay() + 6) % 7;
+  const dias = new Date(y, m + 1, 0).getDate();
+  const ev = all();
+  let h = ['L','M','X','J','V','S','D'].map(d => `<b>${d}</b>`).join('') + '<span></span>'.repeat(vacios);
+  for (let d = 1; d <= dias; d++) {
+    const f = iso(new Date(y, m, d));
+    const cats = [...new Set(ev.filter(e => e.fecha === f).map(e => e.categoria))].slice(0, 4);
+    const pts = cats.map(c => `<i style="background:${COL[c] || COL.otro}"></i>`).join('');
+    h += `<button class="d${f === hoy ? ' hoy' : ''}${f === sel ? ' sel' : ''}" data-f="${f}">${d}<em>${pts}</em></button>`;
+  }
+  $('#grid').innerHTML = h;
+}
+
+function lista() {
+  const q = $('#q').value.toLowerCase(), fc = $('#fc').value, hoy = iso(new Date());
+  let ev = all().filter(e => (!fc || e.categoria === fc) && (!q || (e.titulo + ' ' + (e.notas || '')).toLowerCase().includes(q)));
+  ev = modo === 'dia' ? ev.filter(e => e.fecha === sel) : ev.filter(e => e.fecha >= hoy);
+  $('#tit').textContent = modo === 'dia' ? fmt(sel) : 'Próximos eventos';
+  $('#lista').innerHTML = ev.length ? ev.map(e => `
+    <li class="ev${e.hecho ? ' ok' : ''}" style="--c:${COL[e.categoria] || COL.otro}">
+      <input type="checkbox" data-a="ck" data-id="${e.id}" ${e.hecho ? 'checked' : ''} ${e.repo ? 'disabled' : ''} aria-label="Marcar como hecho">
+      <div><strong>${esc(e.titulo)}</strong>
+        <small>${modo === 'prox' ? fmt(e.fecha) + ' · ' : ''}${e.hora || 'Todo el día'} · ${esc(e.categoria)}${e.repo ? ' · compartido' : ''}</small>
+        ${e.notas ? `<p>${esc(e.notas)}</p>` : ''}
+      </div>
+      ${e.repo ? '' : `<span><button data-a="ed" data-id="${e.id}" aria-label="Editar">✎</button> <button data-a="del" data-id="${e.id}" aria-label="Borrar">✕</button></span>`}
+    </li>`).join('') : `<li class="vacio">${modo === 'dia' ? 'No hay eventos este día. Agrega uno con el formulario.' : 'No hay eventos próximos.'}</li>`;
+  $('#ft').textContent = `${shared.length} compartidos del repositorio · ${local.length} personales (guardados solo en este navegador)`;
+}
+
+const dibujar = () => { calendario(); lista(); };
+
+function limpiar() {
+  editId = null; $('#f').reset(); $('#fe').value = sel;
+  $('#ftit').textContent = 'Nuevo evento'; $('#ok').textContent = 'Guardar evento'; $('#cancel').hidden = true;
+}
+
+$('#f').onsubmit = e => {
+  e.preventDefault();
+  const o = {titulo:$('#t').value.trim(), fecha:$('#fe').value, hora:$('#h').value, categoria:$('#c').value, notas:$('#n').value.trim()};
+  if (!o.titulo || !o.fecha) return;
+  if (editId) Object.assign(local.find(x => x.id === editId), o);
+  else local.push({id:'l' + Date.now(), hecho:false, ...o});
+  save(); sel = o.fecha; view = new Date(o.fecha + 'T00:00'); limpiar(); dibujar();
+};
+$('#cancel').onclick = limpiar;
+
+$('#grid').onclick = e => {
+  const b = e.target.closest('.d'); if (!b) return;
+  sel = b.dataset.f; modo = 'dia'; $('#fe').value = sel;
+  document.querySelectorAll('.tabs button').forEach(t => t.classList.toggle('on', t.dataset.v === 'dia'));
+  dibujar();
+};
+$('#lista').onclick = e => {
+  const b = e.target.closest('[data-a]'); if (!b) return;
+  const x = local.find(z => z.id === b.dataset.id); if (!x) return;
+  if (b.dataset.a === 'ck') { x.hecho = b.checked; }
+  if (b.dataset.a === 'del' && confirm('¿Borrar este evento?')) local = local.filter(z => z !== x);
+  if (b.dataset.a === 'ed') {
+    editId = x.id; $('#t').value = x.titulo; $('#fe').value = x.fecha; $('#h').value = x.hora || '';
+    $('#c').value = x.categoria; $('#n').value = x.notas || '';
+    $('#ftit').textContent = 'Editar evento'; $('#ok').textContent = 'Guardar cambios'; $('#cancel').hidden = false;
+    $('#t').focus(); return;
+  }
+  save(); dibujar();
+};
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  modo = b.dataset.v;
+  document.querySelectorAll('.tabs button').forEach(t => t.classList.toggle('on', t === b));
+  lista();
+});
+$('#q').oninput = lista; $('#fc').onchange = lista;
+$('#prev').onclick = () => { view = new Date(view.getFullYear(), view.getMonth() - 1, 1); calendario(); };
+$('#next').onclick = () => { view = new Date(view.getFullYear(), view.getMonth() + 1, 1); calendario(); };
+$('#hoy').onclick = () => { view = new Date(); sel = iso(view); $('#fe').value = sel; dibujar(); };
+
+$('#exp').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(local, null, 2)], {type:'application/json'}));
+  a.download = 'mi-agenda.json'; a.click(); URL.revokeObjectURL(a.href);
+};
+$('#imp').onchange = async e => {
+  try {
+    const datos = JSON.parse(await e.target.files[0].text());
+    if (!Array.isArray(datos)) throw 0;
+    datos.filter(d => d.titulo && /^\d{4}-\d{2}-\d{2}$/.test(d.fecha)).forEach(d => {
+      const n = {id:d.id || 'l' + Math.random().toString(36).slice(2), hecho:!!d.hecho, titulo:String(d.titulo), fecha:d.fecha, hora:d.hora || '', categoria:COL[d.categoria] ? d.categoria : 'otro', notas:d.notas || ''};
+      local = local.filter(x => x.id !== n.id).concat(n);
+    });
+    save(); dibujar();
+  } catch (err) { alert('El archivo no es una agenda válida (.json).'); }
+  e.target.value = '';
+};
+
+fetch('eventos.json').then(r => r.json()).then(d => {
+  shared = d.map((e, i) => ({...e, id:'r' + i})); dibujar();
+}).catch(() => {});
+
+limpiar(); dibujar();
+</script>
 </body>
 </html>
