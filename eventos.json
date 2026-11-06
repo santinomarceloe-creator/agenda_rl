@@ -1,0 +1,30 @@
+[
+  {
+    "titulo": "Reunión de equipo",
+    "fecha": "2026-11-09",
+    "hora": "10:00",
+    "categoria": "trabajo",
+    "notas": "Revisión de avances de la semana."
+  },
+  {
+    "titulo": "Entrega de informe",
+    "fecha": "2026-11-13",
+    "hora": "",
+    "categoria": "trabajo",
+    "notas": "Subir el PDF a la carpeta archivos/."
+  },
+  {
+    "titulo": "Clase de repaso",
+    "fecha": "2026-11-16",
+    "hora": "18:30",
+    "categoria": "estudio",
+    "notas": ""
+  },
+  {
+    "titulo": "Cena grupal",
+    "fecha": "2026-11-20",
+    "hora": "21:00",
+    "categoria": "personal",
+    "notas": "Confirmar lugar."
+  }
+]
